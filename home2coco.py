@@ -26,5 +26,7 @@ for img_num, img in enumerate(image_paths):
     util.add_image(annot_dict, img, img_num, img_labels)
 
 outpath = os.path.join(output_dir, "experiment_{}_coco_train.json".format(exp_num))
+
+util.remove_negative_samples(annot_dict)
 with open(outpath, "w") as out:
     json.dump(annot_dict, out)

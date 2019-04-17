@@ -9,16 +9,26 @@ def add_image(annot_dict, img_path, img_id, img_labels):
         "license": 4,
         "width": width,
         "height": height,
-        "filename": os.path.basename(img_path)
+        "file_name": os.path.basename(img_path)
     }
     annot_dict['images'].append(entry)
 
     for label in img_labels:
-        add_label(annot_dict, img_id, label)
+        add_label(annot_dict, img_id, label, entry)
 
-def add_label(annot_dict, img_id, label):
+def add_label(annot_dict, img_id, label, img):
+    cat = annot_dict['categories'][label[0]]
+
+    label[2] = label[2]*img['width']
+    label[3] = label[3] * img['height']
+    label[4] = label[4] * img['width']
+    label[5] = label[5] * img['height']
+
+    # print()
+
     entry = {
         "id": label[1],
+        "category_id": cat['id'],
         "iscrowd": 0,
         "image_id": img_id,
         "bbox": label[2:]
@@ -57,6 +67,18 @@ def verify_folder(path):
         raise Exception("missing the JPEGImages folder\n\ndir: {}".format(path))
     if not os.path.isdir(os.path.join(path, "labels")):
         raise Exception("missing the labels folder\n\ndir: {}".format(path))
+
+def remove_negative_samples(annots):
+    num_img = len(annots['images'])
+    imgs = []
+    for a in annots['annotations']:
+        imgs.append(a['image_id'])
+
+    imgs = set(imgs)
+    newimgs = [x for x in annots['images'] if x['id'] in imgs]
+    annots['images'] = newimgs
+    # print()
+
 
 def template(exp_num):
     return {
