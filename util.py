@@ -19,12 +19,17 @@ def add_image(annot_dict, img_path, img_id, img_labels):
 def add_label(annot_dict, img_id, label, img):
     cat = annot_dict['categories'][label[0]]
 
-    label[2] = label[2]*img['width']
-    label[3] = label[3] * img['height']
-    label[4] = label[4] * img['width']
-    label[5] = label[5] * img['height']
+    w = img['width']
+    h = img['height']
 
-    # print()
+    label[2] = label[2] * w
+    label[3] = label[3] * h
+    label[4] = label[4] * w
+    label[5] = label[5] * h
+
+    # convert from center coordinates to edges
+    label[2] = label[2] - label[4]/2
+    label[3] = label[3] - label[5]/2
 
     entry = {
         "id": label[1],

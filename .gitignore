@@ -2,3 +2,7 @@ output
 .vscode
 __pycache__
 .idea
+input
+*.DS_Store
+exclude-list.txt
+synch.sh
