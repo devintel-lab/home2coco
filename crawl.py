@@ -16,8 +16,6 @@ def crawl(path, exp):
     outfiles = []
     for root, dirs, files in os.walk(path):
         if "included" in root:
-            # if len(outfiles) > 20:
-            #     break
             if any (x in root for x in frame_dirs):
                 cam = "07" if "cam07" in root else "08"
                 subj = osp.basename(osp.dirname(root)).replace("_", "")
@@ -34,10 +32,12 @@ def crawl(path, exp):
 
     return outfiles
 
+
 def write_filelist(files, path):
     with open(path, "w") as out:
         for f in files:
             out.write(f+"\n")
+
 
 
 if __name__ == "__main__":
