@@ -6,3 +6,5 @@ input
 *.DS_Store
 exclude-list.txt
 synch.sh
+*.txt
+subject_table.txt

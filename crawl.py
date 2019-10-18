@@ -2,6 +2,7 @@ import os
 import os.path as osp
 from shutil import copy
 import sys
+import argparse
 
 # expNum_subj_cam_frameNum
 #
@@ -16,7 +17,7 @@ def crawl(path, exp):
     outfiles = []
     for root, dirs, files in os.walk(path):
         if "included" in root:
-            if any (x in root for x in frame_dirs):
+            if any(x in root for x in frame_dirs):
                 cam = "07" if "cam07" in root else "08"
                 subj = osp.basename(osp.dirname(root)).replace("_", "")
                 for file in files:
@@ -41,9 +42,15 @@ def write_filelist(files, path):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Crawl multiwork and pull the child+parent frames')
+    parser.add_argument("--exp_dir", type=str, default="input")
+    parser.add_argument("--out_dir", type=str, default="output")
+    parser.add_argument("--exp", type=int, default=15)
 
-    exp_dir = sys.argv[1]
-    out_dir = sys.argv[2]
+    args = parser.parse_args()
+
+    exp_dir = args.exp_dir
+    out_dir = args.out_dir
     exp = sys.argv[3]
 
     outfiles = crawl(exp_dir, exp)
