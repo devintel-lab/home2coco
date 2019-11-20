@@ -59,6 +59,8 @@ parser.add_argument("--tag", type=str, default=None)  # tag to append to output
 parser.add_argument("--make_uniform", action='store_true', default=False)
 # alternate root dir for images
 parser.add_argument("--alt_img_root", type=str, default=None)
+parser.add_argument("--nopot", action='store_true', default=False)
+parser.add_argument("--justpot", action='store_true', default=False)
 
 
 args = parser.parse_args()
@@ -69,6 +71,10 @@ exp_num = args.exp
 
 
 util.verify_folder(annot_input_dir)
+
+
+
+
 
 image_paths = []
 with open(os.path.join(annot_input_dir, "training.txt"), "r") as input:
@@ -89,7 +95,14 @@ if args.infer_set:
                   mode="inference",
                   tag=args.tag, args=args)
 
-elif args.pot_part:
+if args.nopot:
+    labels = util.make_nopot(labels)
+
+if args.justpot:
+    labels = util.make_justpot(labels)
+
+
+if args.pot_part:
     partitions = []
     no_pot_imgs = util.filter_no_pot(labels, image_paths)
     for color, subjs in util.pot_map.items():
@@ -114,5 +127,13 @@ elif args.pot_part:
         # print()
 else:
     train, test = util.subsample(image_paths, percent=10)
-    gen_and_write(output_dir, exp_num, train, labels, mode="train", args=args)
-    gen_and_write(output_dir, exp_num, test, labels, mode="test", args=args)
+
+    if args.nopot:
+        tag = "nopot"
+    elif args.justpot:
+        tag = "justpot"
+    else:
+        tag = None
+
+    gen_and_write(output_dir, exp_num, train, labels, mode="train", args=args, tag=tag)
+    gen_and_write(output_dir, exp_num, test, labels, mode="test", args=args, tag=tag)

@@ -36,6 +36,34 @@ subj2potcolor = {subj: color for color, sbjgrp in pot_map.items()
                  for subj in sbjgrp}
 
 
+def make_nopot(labels):
+    result = {}
+    for img, labs in labels.items():
+        new_labels = []
+        for l in labs:
+            if l[0] == 8:
+                continue
+            new_labels.append(l)
+
+        if len(new_labels) > 0:
+            result[img] = new_labels
+
+    return result
+
+
+def make_justpot(labels):
+    result = {}
+    for img, labs in labels.items():
+        new_labels = []
+        for l in labs:
+            if l[0] == 8:
+                new_labels.append(l)
+
+        if len(new_labels) > 0:
+            result[img] = new_labels
+
+    return result
+
 def make_uniform(imgs, labels, num_iters=2500,
                  sample_size=None):
     """
