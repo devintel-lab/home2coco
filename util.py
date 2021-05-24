@@ -7,6 +7,9 @@ import multiwork
 import numpy as np
 import copy
 
+
+import templates
+
 from scipy.stats import entropy
 
 pot_map = {
@@ -34,6 +37,28 @@ pot_map = {
 
 subj2potcolor = {subj: color for color, sbjgrp in pot_map.items()
                  for subj in sbjgrp}
+
+
+def make_multipot(labels):
+    result = {}
+    for img, labs in labels.items():
+        new_labels = []
+        for l in labs:
+            if l[0] == 8:
+                subj = img[:4]
+                if subj in pot_map['yellow']:
+                    l[0] = 10
+                elif subj in pot_map['black']:
+                    l[0] = 11
+            new_labels.append(l)
+
+        if len(new_labels) == 1 and new_labels[0][0] in [8, 10, 11]:
+            continue
+
+        if len(new_labels) > 0:
+            result[img] = new_labels
+
+    return result
 
 
 def make_nopot(labels):
@@ -174,8 +199,6 @@ def add_label(annot_dict, img_id, label, img):
 
     w = img['width']
     h = img['height']
-    if '1521_parent_frame_list_img_6901' in img['file_name']:
-        print()
 
     label[2] = label[2] * w
     label[3] = label[3] * h
@@ -275,73 +298,11 @@ def verify_image_roots(imgs, real_root):
 
 
 def template(exp_num):
-    return {
-        "info": {
-            "description": "HOME experiment {}".format(exp_num),
-            "url": "TODO",
-            "version": "1.0",
-            "year": "2019",
-            "date_created": "04/01/2019"
-        },
-        "licenses": [
-            {
-                "url": "http://creativecommons.org/licenses/by/2.0",
-                "id": 4,
-                "name": "Attribution License"
-            }
-        ],
-        "images": [],
-        "annotations": [],
-        "categories": [
-            {
-                "supercategory": "animal",
-                "id": 1,
-                "name": "bison"
-            },
-            {
-                "supercategory": "animal",
-                "id": 2,
-                "name": "alligator"
-            },
-            {
-                "supercategory": "outdoor",
-                "id": 3,
-                "name": "drop"
-            },
-            {
-                "supercategory": "kitchen",
-                "id": 4,
-                "name": "kettle"
-            },
-            {
-                "supercategory": "animal",
-                "id": 5,
-                "name": "koala"
-            },
-            {
-                "supercategory": "food",
-                "id": 6,
-                "name": "lemon"
-            },
-            {
-                "supercategory": "food",
-                "id": 7,
-                "name": "mango"
-            },
-            {
-                "supercategory": "animal",
-                "id": 8,
-                "name": "moose"
-            },
-            {
-                "supercategory": "kitchen",
-                "id": 9,
-                "name": "pot"
-            },
-            {
-                "supercategory": "animal",
-                "id": 10,
-                "name": "seal"
-            },
-        ]
-    }
+    if exp_num == 15:
+        return templates.exp15
+    elif exp_num == 12:
+        return templates.exp12
+    elif exp_num == 27:
+        return templates.exp12
+    elif exp_num == 91:
+        return templates.exp12

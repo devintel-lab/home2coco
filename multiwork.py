@@ -4,6 +4,7 @@ import pandas as pd
 
 
 
+
 def subject_table():
     data = []
     with open(osp.join(osp.dirname(__file__),
@@ -14,5 +15,3 @@ def subject_table():
     df = pd.DataFrame(data, columns=["subID", "exp",
                                      "date", "kidID"])
     return df
-
-

@@ -61,6 +61,8 @@ parser.add_argument("--make_uniform", action='store_true', default=False)
 parser.add_argument("--alt_img_root", type=str, default=None)
 parser.add_argument("--nopot", action='store_true', default=False)
 parser.add_argument("--justpot", action='store_true', default=False)
+parser.add_argument("--multipot", action="store_true", default=False)
+parser.add_argument("--test_percent", default=10)
 
 
 args = parser.parse_args()
@@ -71,9 +73,6 @@ exp_num = args.exp
 
 
 util.verify_folder(annot_input_dir)
-
-
-
 
 
 image_paths = []
@@ -87,13 +86,27 @@ labels = util.read_labels(os.path.join(annot_input_dir, "labels"))
 if args.infer_set:
     if args.subsamp_subj:
         image_paths = util.filter_subjects(args.subsamp_subj, image_paths)
-        image_paths = util.random_subsample(
-            image_paths, percent=args.samp_percent)
+
+    image_paths = util.random_subsample(image_paths,
+                                        percent=args.samp_percent)
+
+    if args.nopot:
+        tag = "nopot_infer"
+    elif args.justpot:
+        tag = "justpot_infer"
+    elif args.multipot:
+        tag = "multipot_infer"
+    else:
+        tag = None
 
     gen_and_write(output_dir, exp_num,
                   image_paths, labels,
                   mode="inference",
-                  tag=args.tag, args=args)
+                  tag=tag, args=args)
+    sys.exit(0)
+
+if args.multipot:
+    labels = util.make_multipot(labels)
 
 if args.nopot:
     labels = util.make_nopot(labels)
@@ -113,7 +126,7 @@ if args.pot_part:
         if args.make_uniform:
             imgs = util.make_uniform(imgs, labels)
 
-        train, test = util.subsample(imgs, percent=10)
+        train, test = util.subsample(imgs, percent=args.samp_percent)
 
         partitions.append((color, train, test))
 
@@ -126,14 +139,18 @@ if args.pot_part:
                       p[2], labels, mode=f"{p[0]}_test", args=args)
         # print()
 else:
-    train, test = util.subsample(image_paths, percent=10)
+    train, test = util.subsample(image_paths, percent=args.test_percent)
 
     if args.nopot:
         tag = "nopot"
     elif args.justpot:
         tag = "justpot"
+    elif args.multipot:
+        tag = "multipot"
     else:
         tag = None
 
-    gen_and_write(output_dir, exp_num, train, labels, mode="train", args=args, tag=tag)
-    gen_and_write(output_dir, exp_num, test, labels, mode="test", args=args, tag=tag)
+    gen_and_write(output_dir, exp_num, train, labels,
+                  mode="train", args=args, tag=tag)
+    gen_and_write(output_dir, exp_num, test, labels,
+                  mode="test", args=args, tag=tag)

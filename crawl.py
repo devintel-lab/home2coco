@@ -16,7 +16,7 @@ def crawl(path, exp):
     frame_dirs = ("cam07_frames_p", "cam08_frames_p")
     outfiles = []
     for root, dirs, files in os.walk(path):
-        if "included" in root:
+        if "included" in root and "no_smoothing" not in root:
             if any(x in root for x in frame_dirs):
                 cam = "07" if "cam07" in root else "08"
                 subj = osp.basename(osp.dirname(root)).replace("_", "")
@@ -51,7 +51,13 @@ if __name__ == "__main__":
 
     exp_dir = args.exp_dir
     out_dir = args.out_dir
-    exp = sys.argv[3]
+    exp = args.exp
+
+    if not osp.isdir(osp.join(out_dir, "JPEGImages")):
+        os.mkdir(osp.join(out_dir, "JPEGImages"))
+
+    if not osp.isdir(osp.join(out_dir, "labels")):
+        os.mkdir(osp.join(out_dir, "labels"))
 
     outfiles = crawl(exp_dir, exp)
 

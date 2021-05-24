@@ -3,6 +3,7 @@ import sys
 import random
 import os.path as osp
 
+
 def subsample(flist, percent=0.1):
     random.shuffle(flist)
     N = int(len(flist)*percent)
